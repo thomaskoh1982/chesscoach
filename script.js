@@ -63,29 +63,46 @@ document.querySelectorAll('.benefit-card, .service-card, .about-text, .about-ima
     observer.observe(el);
 });
 
-// Form submission handling
+// Form submission handling for email
 const contactForm = document.querySelector('.chess-form');
-contactForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(this);
-    const parentName = formData.get('parent-name');
-    const childName = formData.get('child-name');
-    const childAge = formData.get('child-age');
-    const experience = formData.get('experience');
-    const message = formData.get('message');
-    
-    // Simple validation
-    if (!parentName || !childName || !childAge || !experience) {
-        showNotification('Please fill in all required fields.', 'error');
-        return;
-    }
-    
-    // Simulate form submission
-    showNotification('Thank you for your message! Coach Thomas will get back to you soon.', 'success');
-    this.reset();
-});
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+        // Get form data
+        const formData = new FormData(this);
+        const parentName = formData.get('parent-name');
+        const childName = formData.get('child-name');
+        const childAge = formData.get('child-age');
+        const experience = formData.get('experience');
+        const message = formData.get('message');
+        
+        // Simple validation
+        if (!parentName || !childName || !childAge || !experience) {
+            e.preventDefault();
+            showNotification('Please fill in all required fields.', 'error');
+            return;
+        }
+        
+        // Add loading state
+        const submitButton = this.querySelector('button[type="submit"]');
+        if (submitButton) {
+            const originalButtonText = submitButton.textContent;
+            submitButton.textContent = 'Sending...';
+            submitButton.disabled = true;
+            
+            // Reset button after a short delay
+            setTimeout(() => {
+                submitButton.textContent = originalButtonText;
+                submitButton.disabled = false;
+            }, 3000);
+        }
+        
+        // Let the form submit naturally via mailto:
+        // Show notification after a delay to account for email client opening
+        setTimeout(() => {
+            showNotification('Please check your email client to complete sending your message.', 'success');
+        }, 1000);
+    });
+}
 
 // Notification system
 function showNotification(message, type) {
@@ -219,9 +236,9 @@ document.head.appendChild(style);
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const hero = document.querySelector('.hero');
-    const heroHeight = hero.offsetHeight;
+    const heroHeight = hero?.offsetHeight;
     
-    if (scrolled < heroHeight) {
+    if (hero && scrolled < heroHeight) {
         const floatingPieces = document.querySelectorAll('.piece');
         floatingPieces.forEach((piece, index) => {
             const speed = 0.5 + (index * 0.1);
@@ -249,12 +266,22 @@ function typeWriter(element, text, speed = 100) {
 // Initialize typing effect when page loads
 window.addEventListener('load', () => {
     const heroTitle = document.querySelector('.hero-title');
-    const originalText = heroTitle.textContent;
+    if (heroTitle) {
+        const originalText = heroTitle.textContent;
+        
+        // Add a small delay before starting the typing effect
+        setTimeout(() => {
+            typeWriter(heroTitle, originalText, 80);
+        }, 500);
+    }
     
-    // Add a small delay before starting the typing effect
+    // Add page load animation
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
+    
     setTimeout(() => {
-        typeWriter(heroTitle, originalText, 80);
-    }, 500);
+        document.body.style.opacity = '1';
+    }, 100);
 });
 
 // Add chess piece rotation on scroll
@@ -282,22 +309,15 @@ document.querySelectorAll('.service-card').forEach(card => {
 document.querySelectorAll('.benefit-card').forEach(card => {
     card.addEventListener('mouseenter', () => {
         const icon = card.querySelector('.benefit-icon');
-        icon.style.transform = 'scale(1.2) rotate(10deg)';
+        if (icon) {
+            icon.style.transform = 'scale(1.2) rotate(10deg)';
+        }
     });
     
     card.addEventListener('mouseleave', () => {
         const icon = card.querySelector('.benefit-icon');
-        icon.style.transform = 'scale(1) rotate(0deg)';
+        if (icon) {
+            icon.style.transform = 'scale(1) rotate(0deg)';
+        }
     });
 });
-
-// Add loading animation
-window.addEventListener('load', () => {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
-    
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
-});
-
