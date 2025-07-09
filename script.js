@@ -1,11 +1,4 @@
 // ======================
-// Initialize EmailJS with your Public Key
-// ======================
-(function() {
-    emailjs.init("TOhOxDy9IfuPpY1S7");
-})();
-
-// ======================
 // Mobile Navigation Toggle
 // ======================
 const hamburger = document.querySelector('.hamburger');
@@ -16,7 +9,7 @@ hamburger.addEventListener('click', () => {
     navMenu.classList.toggle('active');
 });
 
-// Close menu when clicking links
+// Close mobile menu when clicking on a link
 document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
     hamburger.classList.remove('active');
     navMenu.classList.remove('active');
@@ -39,7 +32,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ======================
-// Navbar Scroll Effect
+// Navbar Background Change
 // ======================
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
@@ -55,6 +48,11 @@ window.addEventListener('scroll', () => {
 // ======================
 // Scroll Animations
 // ======================
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -62,7 +60,7 @@ const observer = new IntersectionObserver((entries) => {
             entry.target.style.transform = 'translateY(0)';
         }
     });
-}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+}, observerOptions);
 
 document.querySelectorAll('.benefit-card, .service-card, .about-text, .about-image').forEach(el => {
     el.style.opacity = '0';
@@ -72,7 +70,7 @@ document.querySelectorAll('.benefit-card, .service-card, .about-text, .about-ima
 });
 
 // ======================
-// Form Submission Handler
+// Form Submission with Formspree
 // ======================
 const contactForm = document.getElementById('chess-form');
 
@@ -80,11 +78,13 @@ if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Validate required fields
-        const requiredFields = contactForm.querySelectorAll('[required]');
-        let isValid = true;
+        // Get form data
+        const formData = new FormData(contactForm);
+        const submitButton = contactForm.querySelector('button[type="submit"]');
         
-        requiredFields.forEach(field => {
+        // Validate required fields
+        let isValid = true;
+        contactForm.querySelectorAll('[required]').forEach(field => {
             if (!field.value.trim()) {
                 field.style.borderColor = '#ff6b6b';
                 isValid = false;
@@ -93,7 +93,7 @@ if (contactForm) {
             }
         });
 
-        // Email validation
+        // Validate email format
         const emailField = contactForm.querySelector('#parent-email');
         if (emailField && !/^\S+@\S+\.\S+$/.test(emailField.value)) {
             emailField.style.borderColor = '#ff6b6b';
@@ -103,51 +103,36 @@ if (contactForm) {
         }
 
         if (!isValid) {
-            showNotification('Please fill all required fields', 'error');
+            showNotification('Please fill in all required fields', 'error');
             return;
         }
 
-        // Submit form
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Sending...';
+        // Show loading state
+        submitButton.disabled = true;
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = 'Sending...';
 
         try {
-            // Send via EmailJS
-            await emailjs.sendForm(
-                'service_x02j4o9',
-                'template_yswp2pd',
-                contactForm
-            );
-            
-            showNotification('Message sent successfully! Coach Thomas will contact you soon.', 'success');
-            contactForm.reset();
-        } catch (error) {
-            console.error('EmailJS Error:', error);
-            
-            // Fallback to Formspree
-            try {
-                const formspreeResponse = await fetch('https://formspree.io/f/xblyvnpa', {
-                    method: 'POST',
-                    body: new FormData(contactForm),
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                if (formspreeResponse.ok) {
-                    showNotification('Sent via backup method!', 'success');
-                    contactForm.reset();
-                } else {
-                    throw new Error('Formspree submission failed');
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
                 }
-            } catch (fallbackError) {
-                console.error('Formspree Error:', fallbackError);
-                showNotification('Failed to send. Please try again later or contact us directly.', 'error');
+            });
+
+            if (response.ok) {
+                showNotification('Thank you! Your message has been sent successfully.', 'success');
+                contactForm.reset();
+            } else {
+                throw new Error('Form submission failed');
             }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Something went wrong. Please try again later.', 'error');
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
         }
     });
 }
@@ -156,20 +141,24 @@ if (contactForm) {
 // Notification System
 // ======================
 function showNotification(message, type) {
-    const existing = document.querySelector('.notification');
-    if (existing) existing.remove();
-
+    // Remove existing notifications
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.innerHTML = `
         <div class="notification-content">
             <span class="notification-icon">${type === 'success' ? '✓' : '⚠'}</span>
-            <span>${message}</span>
+            <span class="notification-message">${message}</span>
             <button class="notification-close">&times;</button>
         </div>
     `;
-
-    // Styles
+    
+    // Add styles
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -181,22 +170,18 @@ function showNotification(message, type) {
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         z-index: 1000;
         animation: notificationSlideIn 0.3s ease-out;
-        display: flex;
-        align-items: center;
-        gap: 12px;
     `;
-
+    
     document.body.appendChild(notification);
-
-    // Auto-remove after 5s
-    const autoRemove = setTimeout(() => {
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
         notification.style.animation = 'notificationSlideOut 0.3s ease-in';
         setTimeout(() => notification.remove(), 300);
     }, 5000);
-
+    
     // Manual close
     notification.querySelector('.notification-close').addEventListener('click', () => {
-        clearTimeout(autoRemove);
         notification.style.animation = 'notificationSlideOut 0.3s ease-in';
         setTimeout(() => notification.remove(), 300);
     });
@@ -205,14 +190,16 @@ function showNotification(message, type) {
 // ======================
 // Interactive Elements
 // ======================
+
 // Chess piece hover effects
 document.querySelectorAll('.piece').forEach(piece => {
     piece.addEventListener('mouseenter', () => {
         piece.style.transform = 'scale(1.2) rotate(15deg)';
         piece.style.transition = 'transform 0.3s ease';
     });
+    
     piece.addEventListener('mouseleave', () => {
-        piece.style.transform = '';
+        piece.style.transform = 'scale(1) rotate(0deg)';
     });
 });
 
@@ -222,73 +209,65 @@ document.querySelectorAll('.btn').forEach(btn => {
         const ripple = document.createElement('span');
         const rect = this.getBoundingClientRect();
         const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
         
         ripple.style.cssText = `
             position: absolute;
             width: ${size}px;
             height: ${size}px;
-            left: ${e.clientX - rect.left - size/2}px;
-            top: ${e.clientY - rect.top - size/2}px;
-            background: rgba(255,255,255,0.3);
+            left: ${x}px;
+            top: ${y}px;
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             transform: scale(0);
             animation: ripple 0.6s linear;
         `;
         
+        this.style.position = 'relative';
+        this.style.overflow = 'hidden';
         this.appendChild(ripple);
+        
         setTimeout(() => ripple.remove(), 600);
     });
 });
 
 // ======================
-// Scroll Effects
-// ======================
-window.addEventListener('scroll', () => {
-    // Parallax effect for floating pieces
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    const heroHeight = hero?.offsetHeight;
-    
-    if (hero && scrolled < heroHeight) {
-        document.querySelectorAll('.piece').forEach((piece, index) => {
-            const speed = 0.5 + (index * 0.1);
-            piece.style.transform = `translateY(${scrolled * speed}px)`;
-        });
-    }
-
-    // Chess icon rotation
-    const chessIcon = document.querySelector('.chess-icon');
-    if (chessIcon) {
-        chessIcon.style.transform = `rotate(${scrolled * 0.5}deg)`;
-    }
-});
-
-// ======================
 // Page Load Effects
 // ======================
-window.addEventListener('load', () => {
-    // Fade-in animation
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        document.body.style.transition = 'opacity 0.5s ease';
-        document.body.style.opacity = '1';
-    }, 100);
 
-    // Typing effect for hero title
+// Typing animation for hero title
+function typeWriter(element, text, speed = 100) {
+    let i = 0;
+    element.textContent = '';
+    
+    function type() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        }
+    }
+    
+    type();
+}
+
+window.addEventListener('load', () => {
+    // Typing effect
     const heroTitle = document.querySelector('.hero-title');
     if (heroTitle) {
-        const text = heroTitle.textContent;
-        heroTitle.textContent = '';
-        let i = 0;
-        const typing = setInterval(() => {
-            if (i < text.length) {
-                heroTitle.textContent += text.charAt(i);
-                i++;
-            } else {
-                clearInterval(typing);
-            }
-        }, 80);
+        const originalText = heroTitle.textContent;
+        setTimeout(() => {
+            typeWriter(heroTitle, originalText, 80);
+        }, 500);
     }
+    
+    // Page fade-in
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+    }, 100);
 });
 
 // ======================

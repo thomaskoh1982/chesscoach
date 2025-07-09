@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thomas Koh - Chess Coach for Kids</title>
-    <meta name="description" content="Learn chess with Coach Thomas Koh! FIDE rated 1000 chess instructor specializing in teaching kids.">
+    <title>Thomas Koh - Chess Coach for Kids | Learn Chess with Fun!</title>
+    <meta name="description" content="Learn chess with Coach Thomas Koh! FIDE rated 1000 chess instructor specializing in teaching kids. Fun, engaging lessons for beginners to intermediate players.">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script src="script.js"></script>
-	
 <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -71,12 +68,17 @@
                 <div class="about-text">
                     <h3>Your Friendly Chess Guide</h3>
                     <p>Hi there, young chess enthusiasts! I'm Thomas Koh, and I'm absolutely passionate about teaching chess to kids like you. With my FIDE rating of 1000, I bring both skill and enthusiasm to every lesson.</p>
+                    
+                    <p>I believe that chess is not just a game – it's an adventure! Every piece has its own personality, every move tells a story, and every game is a new journey waiting to be explored.</p>
+                    
                     <div class="fun-facts">
                         <h4>Fun Facts About Coach Thomas:</h4>
                         <ul>
                             <li>🎯 Started playing chess at age 8</li>
                             <li>🏆 Has taught over 100 young chess players</li>
                             <li>🌟 Loves making chess fun with stories and games</li>
+                            <li>🎨 Uses colorful boards and creative teaching methods</li>
+                            <li>📚 Always learning new ways to make chess exciting</li>
                         </ul>
                     </div>
                 </div>
@@ -87,14 +89,35 @@
         </div>
     </section>
 
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits">
+        <div class="container">
+            <h2 class="section-title">Why Should Kids Learn Chess?</h2>
+            <div class="benefits-grid">
+                <!-- ... (keep existing benefit cards) ... -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Chess Coaching Services</h2>
+            <div class="services-grid">
+                <!-- ... (keep existing service cards) ... -->
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
             <h2 class="section-title">Ready to Start Your Chess Adventure?</h2>
             <div class="contact-content">
                 <div class="contact-info">
-                    <h3>Get in Touch</h3>
-                    <p>I'm excited to help you begin your chess journey!</p>
+                    <h3>Get in Touch with Coach Thomas</h3>
+                    <p>I'm excited to help you begin your chess journey! Contact me to schedule your first lesson or ask any questions.</p>
+                    
                     <div class="contact-methods">
                         <div class="contact-method">
                             <span class="contact-icon">📧</span>
@@ -110,32 +133,35 @@
                                 <p>+65-97704951</p>
                             </div>
                         </div>
+                        <div class="contact-method">
+                            <span class="contact-icon">🕒</span>
+                            <div>
+                                <h4>Available Hours</h4>
+                                <p>Mon-Fri: 3:00 PM - 8:00 PM<br>
+                                   Sat-Sun: 9:00 AM - 6:00 PM</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="contact-form">
-                    <form id="chess-form" class="chess-form">
+                    <form id="chess-form" class="chess-form" action="https://formspree.io/f/xblyvnpa" method="POST">
                         <h3>Send a Message</h3>
-                        
                         <div class="form-group">
                             <label for="parent-name">Parent's Name*</label>
                             <input type="text" id="parent-name" name="parent_name" required>
                         </div>
-                        
                         <div class="form-group">
                             <label for="parent-email">Parent's Email*</label>
                             <input type="email" id="parent-email" name="parent_email" required>
                         </div>
-                        
                         <div class="form-group">
                             <label for="parent-phone">Contact Number*</label>
                             <input type="tel" id="parent-phone" name="parent_phone" required>
                         </div>
-                        
                         <div class="form-group">
                             <label for="child-name">Child's Name*</label>
                             <input type="text" id="child-name" name="child_name" required>
                         </div>
-                        
                         <div class="form-group">
                             <label for="child-age">Child's Age*</label>
                             <select id="child-age" name="child_age" required>
@@ -148,7 +174,6 @@
                                 <option value="15+">15+ years</option>
                             </select>
                         </div>
-                        
                         <div class="form-group">
                             <label for="experience">Chess Experience*</label>
                             <select id="experience" name="experience" required>
@@ -159,12 +184,10 @@
                                 <option value="advanced">Advanced player</option>
                             </select>
                         </div>
-                        
                         <div class="form-group">
                             <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="4"></textarea>
+                            <textarea id="message" name="message" rows="4" placeholder="Tell me about your child's interest in chess or any questions you have..."></textarea>
                         </div>
-                        
                         <button type="submit" class="btn btn-primary">Send Message</button>
                     </form>
                 </div>
@@ -172,6 +195,7 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -180,6 +204,10 @@
                     <span class="logo-text">Coach Thomas</span>
                 </div>
                 <p class="footer-text">Making chess fun and accessible for young minds</p>
+                <div class="footer-rating">
+                    <span class="rating-icon">⭐</span>
+                    <span class="rating-text">FIDE Rating: 1000</span>
+                </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2023 Thomas Koh Chess Coaching. All rights reserved.</p>
@@ -187,5 +215,6 @@
         </div>
     </footer>
 
+    <script src="script.js"></script>
 </body>
 </html>
